@@ -1,7 +1,11 @@
 # jamlink
 Easy connection to your Nordic rtt console via JLinkExe + telnet encapsulated in one tool
 
-python3 implementation without any external dependencies
+You are free to change JLinkExe and/or telnet settings accordingly
+
+It is python3 implementation without any external dependencies
+
+Have fun!
 
 help:
 "////////////////////////////////////////////\n\r" \
