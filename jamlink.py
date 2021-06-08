@@ -3,28 +3,34 @@
 import subprocess
 import time
 import os
+import shutil
+import sys
+
 
 def print_help():
-    help_str = "////////////////////////////////////////////\n\r" \
-        "{} help:\n\r" \
-        "* to restart terminal -- hit Ctrl+C one time\n\r" \
-        "* to exit -- hit Ctrl+C twice\n\r" \
+    help_str = \
+        "////////////////////////////////////////////\n\r"  \
+        "{} help:\n\r"                                      \
+        "* to restart terminal -- hit Ctrl+C one time\n\r"  \
+        "* to exit -- hit Ctrl+C twice\n\r"                 \
         "////////////////////////////////////////////"
     print(help_str.format(os.path.basename(__file__)))
 
+def check_tool(tool):
+    if shutil.which(tool) is None:
+        print("No {} tool is installed".format(tool))
+        sys.exit(1)
+
 def args_supplier(cmd, args):
     args_list = [f'{cmd}']
-    complete_cmd = []
 
-    for k, v in zip(args.keys(), args.values()):
-        args_list.extend([k, v])
+    [args_list.extend([k, v]) for (k, v) in zip(args.keys(), args.values())]
 
-    complete_cmd.extend(args_list)
-
-    return complete_cmd
+    return args_list
 
 def jlink_exe():
     jlink_exe_cmd = "JLinkExe"
+    # if you have to use blank option (w/o argument) just leave the value empty as blank string ""
     jlink_exe_args = {
         "-RTTTelnetPort":"19021",
         "-device":"NRF52832_XXAA",
@@ -33,7 +39,9 @@ def jlink_exe():
         "-autoconnect":"1"
     }
 
+    check_tool(jlink_exe_cmd)
     cmd = args_supplier(jlink_exe_cmd, jlink_exe_args)
+
     return subprocess.Popen(cmd, shell=False, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
 def telnet_exe():
@@ -42,16 +50,21 @@ def telnet_exe():
         "localhost":"19021"
     }
 
+    check_tool(telnet_exe_cmd)
     cmd = args_supplier(telnet_exe_cmd, telnet_exe_args)
     subprocess.run(cmd, shell=False)
 
-while True:
-    print_help()
-    jlink_proc = jlink_exe()
-    time.sleep(1)
+def main(argv = None):
+    while True:
+        print_help()
+        jlink_proc = jlink_exe()
+        time.sleep(1)
 
-    try:
-        telnet_exe()
-    except KeyboardInterrupt:
-        print("\n\rRestarting terminal")
-        jlink_proc.kill()
+        try:
+            telnet_exe()
+        except KeyboardInterrupt:
+            print("\n\rRestarting terminal")
+            jlink_proc.kill()
+
+if __name__ == "__main__":
+    main(sys.argv)
