@@ -54,7 +54,7 @@ def telnet_exe():
     cmd = args_supplier(telnet_exe_cmd, telnet_exe_args)
     subprocess.run(cmd, shell=False)
 
-def main(argv = None):
+def jamlink(argv = None):
     while True:
         print_help()
         jlink_proc = jlink_exe()
@@ -67,4 +67,4 @@ def main(argv = None):
             jlink_proc.kill()
 
 if __name__ == "__main__":
-    main(sys.argv)
+    jamlink(sys.argv)
